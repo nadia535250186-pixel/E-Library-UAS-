@@ -1,69 +1,236 @@
-import Image from "next/image";
+"use client";
+
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import Navbar from "./components/Navbar";
+
+const slides = [
+  {
+    image: "/images/slide1.jpeg",
+    subtitle: "LAFENADHER E-LIBRARY",
+    title: "Temukan buku yang ingin kamu baca.",
+    description:
+      "Jelajahi koleksi buku digital berdasarkan judul, penulis, atau kategori.",
+  },
+  {
+    image: "/images/slide2.jpeg",
+    subtitle: "JELAJAHI DUNIA PENGETAHUAN",
+    title: "Temukan inspirasi dari setiap halaman.",
+    description:
+      "Nikmati pengalaman membaca dan perluas wawasan melalui koleksi perpustakaan digital.",
+  },
+  {
+    image: "/images/slide3.jpeg",
+    subtitle: "RUANG BACA DIGITAL",
+    title: "Mulai perjalanan membaca kamu.",
+    description:
+      "Temukan berbagai pilihan buku menarik yang bisa menemani waktu luangmu.",
+  },
+];
+
+const shelves = [
+  {
+    number: "01 / RAK TERBARU",
+    title: "Temukan yang baru.",
+    description: "Jelajahi buku berdasarkan tahun terbit.",
+    image: "/images/slide1.jpeg",
+    link: "/katalog",
+  },
+  {
+    number: "02 / PILIHAN PEMBACA",
+    title: "Baca yang disukai.",
+    description: "Mulai dari judul pilihan pembaca.",
+    image: "/images/slide2.jpeg",
+    link: "/favorit",
+  },
+  {
+    number: "03 / PILIHAN EDITOR",
+    title: "Jelajahi cerita lain.",
+    description: "Temukan bacaan lintas genre.",
+    image: "/images/slide3.jpeg",
+    link: "/kategori",
+  },
+];
 
 export default function Home() {
+  const [activeSlide, setActiveSlide] = useState(0);
+  const startX = useRef(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveSlide((current) => (current + 1) % slides.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  function showSlide(index: number) {
+    if (index >= slides.length) {
+      setActiveSlide(0);
+    } else if (index < 0) {
+      setActiveSlide(slides.length - 1);
+    } else {
+      setActiveSlide(index);
+    }
+  }
+
+  function handleTouchStart(event: React.TouchEvent<HTMLDivElement>) {
+    startX.current = event.touches[0].clientX;
+  }
+
+  function handleTouchEnd(event: React.TouchEvent<HTMLDivElement>) {
+    const endX = event.changedTouches[0].clientX;
+    const difference = startX.current - endX;
+
+    if (difference > 50) {
+      showSlide(activeSlide + 1);
+    } else if (difference < -50) {
+      showSlide(activeSlide - 1);
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <>
+      <Navbar />
+
+      <main>
+        <section className="hero-carousel">
+          <div
+            className="hero-track"
+            style={{
+              transform: `translateX(-${activeSlide * 100}%)`,
+            }}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {slides.map((slide, index) => (
+              <div
+                className="hero-slide"
+                key={index}
+                style={{
+                  backgroundImage: `linear-gradient(90deg, rgba(45, 24, 12, 0.72), rgba(75, 38, 15, 0.18)), url("${slide.image}")`,
+                }}
+              >
+                <div className="hero-content">
+                  <p className="hero-subtitle">{slide.subtitle}</p>
+                  <h1>{slide.title}</h1>
+                  <p className="hero-description">{slide.description}</p>
+                  <Link href="/katalog" className="hero-button">
+                    Jelajahi Katalog
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button
+            className="slider-button slider-prev"
+            type="button"
+            onClick={() => showSlide(activeSlide - 1)}
+            aria-label="Gambar sebelumnya"
+          >
+            ‹
+          </button>
+
+          <button
+            className="slider-button slider-next"
+            type="button"
+            onClick={() => showSlide(activeSlide + 1)}
+            aria-label="Gambar berikutnya"
+          >
+            ›
+          </button>
+
+          <div className="carousel-dots">
+            {slides.map((slide, index) => (
+              <button
+                key={index}
+                type="button"
+                className={`carousel-dot ${
+                  activeSlide === index ? "active" : ""
+                }`}
+                onClick={() => showSlide(index)}
+                aria-label={`Gambar ${index + 1}`}
+                aria-current={activeSlide === index}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section className="recommendation-section">
+          <div className="section-heading">
+            <div>
+              <h2>
+                Temukan rak yang
+                <br />
+                cocok untukmu.
+              </h2>
+              <p>
+                Dari koleksi terbaru sampai pilihan pembaca, semuanya
+                terhubung ke detail buku dan PDF.
+              </p>
+            </div>
+
+            <Link href="/katalog" className="catalog-link">
+              Buka katalog lengkap ↗
+            </Link>
+          </div>
+
+          <div className="shelf-grid">
+            {shelves.map((shelf) => (
+              <Link
+                href={shelf.link}
+                className="shelf-card"
+                key={shelf.number}
+                style={{
+                  backgroundImage: `linear-gradient(0deg, rgba(20, 14, 11, 0.88), rgba(20, 14, 11, 0.05) 85%), url("${shelf.image}")`,
+                }}
+              >
+                <div className="shelf-card-content">
+                  <p className="shelf-number">{shelf.number}</p>
+                  <div className="shelf-card-bottom">
+                    <div>
+                      <h3>{shelf.title}</h3>
+                      <p>{shelf.description}</p>
+                    </div>
+                    <span className="shelf-arrow">↗</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="pdf-banner">
+          <div>
+            <p className="section-subtitle">SUDAH TAHU YANG INGIN DIBACA?</p>
+            <h2>Masuk ke ruang baca PDF</h2>
+          </div>
+
+          <Link href="/katalog" className="pdf-arrow" aria-label="Buka katalog">
+            →
+          </Link>
+        </section>
+      </main>
+
+      <footer className="footer">
+        <div className="footer-brand">
+          <h3>LAFENADHER E-Library</h3>
+          <p>
+            Perpustakaan digital untuk membaca dan menemukan buku.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="footer-links">
+          <Link href="/">Home</Link>
+          <Link href="/about">About</Link>
+          <Link href="/contact">Contact</Link>
         </div>
-      </main>
-    </div>
+
+        <p className="footer-copyright">
+          © 2026 LAFENADHER E-Library. All rights reserved.
+        </p>
+      </footer>
+    </>
   );
 }
