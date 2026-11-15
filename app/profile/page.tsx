@@ -17,22 +17,30 @@ export default function ProfilePage() {
 
   const [user, setUser] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("currentUser");
+    try {
+      const savedUser = localStorage.getItem("currentUser");
 
-    if (!savedUser) {
+      if (!savedUser) {
+        router.replace("/auth/login");
+        return;
+      }
+
+      const parsedUser: User = JSON.parse(savedUser);
+
+      setUser(parsedUser);
+      setName(parsedUser.name);
+      setEmail(parsedUser.email);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Gagal membaca data profile:", error);
+      localStorage.removeItem("currentUser");
       router.replace("/auth/login");
-      return;
     }
-
-    const parsedUser: User = JSON.parse(savedUser);
-
-    setUser(parsedUser);
-    setName(parsedUser.name);
-    setEmail(parsedUser.email);
   }, [router]);
 
   const handleUpdate = () => {
@@ -74,6 +82,10 @@ export default function ProfilePage() {
     router.replace("/auth/login");
   };
 
+  if (isLoading) {
+    return <p>Loading profile...</p>;
+  }
+
   if (!user) {
     return null;
   }
@@ -82,7 +94,9 @@ export default function ProfilePage() {
     <main className={styles.container}>
       <div className={styles.profileBox}>
         <h1 className={styles.title}>My Profile</h1>
-        <p className={styles.subtitle}>Your E-Library account information</p>
+        <p className={styles.subtitle}>
+          Your E-Library account information
+        </p>
 
         <div className={styles.info}>
           <p className={styles.label}>Member Number</p>
