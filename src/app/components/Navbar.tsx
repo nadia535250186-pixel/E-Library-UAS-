@@ -70,9 +70,7 @@ export default function Navbar() {
         isCollapsed ? 'w-20' : 'w-64'
       } sticky top-0 h-screen shrink-0 bg-[#f4f6fb] border-r border-slate-200/80 flex flex-col justify-between transition-all duration-300 z-30 overflow-y-auto`}
     >
-      {/* Bagian Atas: Logo, Menu Navigasi, & Sedang Dipinjam */}
       <div className="p-4 space-y-6">
-        {/* Header Logo & Tombol Perkecil Sidebar */}
         <div
           className={`flex items-center pt-1 ${
             isCollapsed ? 'justify-center' : 'justify-between pl-2 pr-0'
@@ -80,7 +78,7 @@ export default function Navbar() {
         >
           {!isCollapsed && (
             <Link href="/" className="text-base font-bold text-slate-800">
-              Lafenandher
+              Lafenadher
             </Link>
           )}
           <button
@@ -97,7 +95,6 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Menu Navigasi Utama */}
         <nav className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -130,7 +127,6 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Daftar Buku yang Sedang Dipinjam */}
         {!isCollapsed && (
           <div className="px-2 pt-2 border-t border-slate-200/70">
             <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase mb-2">
@@ -159,7 +155,6 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* Bagian Bawah: Panel Admin & Kartu Profil Akun */}
       <div className="sidebar-footer p-3 border-t border-slate-200/80 space-y-2.5 mt-auto">
         <Link
           href="/admin"
@@ -176,7 +171,6 @@ export default function Navbar() {
           {!isCollapsed && <span>Panel Admin</span>}
         </Link>
 
-        {/* Kotak Profil Member & Tombol Logout */}
         {currentMember && !isCollapsed && (
           <div className="profile-card bg-white rounded-2xl p-3 border border-slate-200/80 shadow-sm">
             <div className="flex items-center justify-between gap-2">
