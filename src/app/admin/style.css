@@ -1,0 +1,34 @@
+.admin-page > h1,
+.admin-page h1,
+.admin-page h2,
+.admin-page h3 {
+  color: var(--seal-brown);
+  font-family: "Times New Roman", Times, serif;
+}
+
+.admin-page form {
+  box-shadow: 0 14px 30px rgba(73, 40, 25, 0.08), inset 0 1px #fff;
+}
+
+.admin-page button,
+.admin-page label {
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.admin-page button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.admin-page input:focus-visible,
+.admin-page select:focus-visible,
+.admin-page button:focus-visible,
+.admin-page label:focus-visible {
+  outline: 2px solid var(--chamoisee);
+  outline-offset: 2px;
+}
+
+.admin-page > div:last-child {
+  overflow: hidden;
+  border-color: rgba(105, 74, 49, 0.18);
+  box-shadow: 0 14px 30px rgba(73, 40, 25, 0.08), inset 0 1px #fff;
+}

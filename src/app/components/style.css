@@ -1,0 +1,30 @@
+.book-card {
+  border: 1px solid rgba(105, 74, 49, 0.14);
+  border-radius: 1rem;
+  background: linear-gradient(155deg, #fffdf8 0%, #f7f0e4 100%);
+  box-shadow: 0 7px 16px rgba(73, 40, 25, 0.08), inset 0 1px #fff;
+  transform: translateZ(0);
+}
+
+.book-card:hover {
+  border-color: rgba(160, 120, 85, 0.38);
+  box-shadow: 0 20px 32px rgba(73, 40, 25, 0.16), inset 0 1px #fff;
+  transform: translateY(-5px) rotateX(1deg);
+}
+
+.library-book-card {
+  transform: perspective(1100px) translateZ(0);
+  transition: transform 260ms ease, box-shadow 260ms ease, border-color 260ms ease;
+}
+
+.library-book-card:hover {
+  transform: perspective(1100px) translateY(-5px) rotateX(1deg);
+}
+
+.library-book-card .book-cover-frame img {
+  transition: transform 400ms ease;
+}
+
+.library-book-card:hover .book-cover-frame img {
+  transform: scale(1.035);
+}

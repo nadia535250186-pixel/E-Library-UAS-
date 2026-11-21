@@ -1,0 +1,30 @@
+.history-page h1 {
+  color: var(--seal-brown);
+  font-family: "Times New Roman", Times, serif;
+}
+
+.history-page table {
+  background: linear-gradient(150deg, #fffdf8, #f7f0e4);
+}
+
+.history-page tbody tr {
+  transition: background-color 160ms ease;
+}
+
+.history-page thead th {
+  color: var(--brown);
+}
+
+.history-page tbody tr:hover {
+  background-color: rgba(234, 220, 197, 0.48);
+}
+
+.history-page td img {
+  box-shadow: 0 5px 12px rgba(73, 40, 25, 0.16);
+}
+
+.history-page button:focus-visible,
+.history-page a:focus-visible {
+  outline: 2px solid var(--chamoisee);
+  outline-offset: 2px;
+}

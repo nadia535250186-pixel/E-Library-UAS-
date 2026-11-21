@@ -1,0 +1,102 @@
+.home-page .home-title,
+.home-page .section-heading {
+  text-wrap: balance;
+}
+
+.home-page {
+  perspective: 1400px;
+}
+
+.home-topline {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.35rem 0 0.2rem;
+}
+
+.home-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--chamoisee);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.home-title {
+  margin-top: 0.35rem;
+  color: var(--seal-brown);
+  font-family: "Times New Roman", Times, serif;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.home-description {
+  max-width: 34rem;
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.home-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid rgba(73, 40, 25, 0.14);
+  border-radius: 999px;
+  color: var(--seal-brown);
+  background: rgba(255, 253, 248, 0.72);
+  box-shadow: 0 5px 14px rgba(73, 40, 25, 0.06);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.home-contact:hover {
+  transform: translateY(-2px);
+  background: var(--ivory);
+  box-shadow: 0 10px 20px rgba(73, 40, 25, 0.12);
+}
+
+.home-banner {
+  border: 1px solid rgba(255, 253, 248, 0.85);
+  border-radius: 1.35rem;
+  box-shadow: 0 24px 44px rgba(73, 40, 25, 0.17), 0 5px 12px rgba(73, 40, 25, 0.08), inset 0 1px rgba(255, 255, 255, 0.65);
+  transform: rotateX(1.2deg);
+  transform-style: preserve-3d;
+  transition: transform 450ms ease, box-shadow 450ms ease;
+}
+
+.home-banner:hover {
+  box-shadow: 0 32px 58px rgba(73, 40, 25, 0.21), 0 8px 18px rgba(73, 40, 25, 0.1), inset 0 1px rgba(255, 255, 255, 0.65);
+  transform: rotateX(0) translateY(-3px);
+}
+
+.section-heading {
+  color: var(--seal-brown);
+  font-family: "Times New Roman", Times, serif;
+  letter-spacing: -0.02em;
+}
+
+.home-page .home-banner {
+  transform-style: preserve-3d;
+}
+
+@media (max-width: 640px) {
+  .home-topline {
+    align-items: flex-start;
+  }
+
+  .home-contact {
+    padding: 0.55rem 0.7rem;
+    font-size: 0.65rem;
+  }
+}

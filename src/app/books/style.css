@@ -1,0 +1,28 @@
+.books-page h1 {
+  color: var(--seal-brown);
+  font-family: "Times New Roman", Times, serif;
+}
+
+.books-page form input {
+  box-shadow: 0 8px 18px rgba(73, 40, 25, 0.06), inset 0 1px #fff;
+}
+
+.books-page form button[type="submit"] {
+  box-shadow: 0 5px 12px rgba(73, 40, 25, 0.22), inset 0 1px rgba(255, 255, 255, 0.22);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.books-page form button[type="submit"]:hover {
+  transform: translateY(-1px) scale(1.04);
+  box-shadow: 0 8px 16px rgba(73, 40, 25, 0.25), inset 0 1px rgba(255, 255, 255, 0.22);
+}
+
+.books-page > div:last-child:not(.grid) {
+  border-color: rgba(105, 74, 49, 0.18);
+  box-shadow: 0 16px 30px rgba(73, 40, 25, 0.09), inset 0 1px #fff;
+}
+
+.books-page :focus-visible {
+  outline: 2px solid var(--chamoisee);
+  outline-offset: 3px;
+}

@@ -1,0 +1,498 @@
+@import "tailwindcss";
+
+:root {
+  --seal-brown: #492819;
+  --brown: #765037;
+  --chamoisee: #a07855;
+  --beige: #eadcc5;
+  --ivory: #fbf8f1;
+  --ink: #37251c;
+  --muted: #887665;
+  --line: rgba(105, 74, 49, 0.16);
+  --surface: rgba(255, 253, 248, 0.88);
+  --surface-raised: #fffdf8;
+  --background: #f5eee2;
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-serif: "Times New Roman", Times, serif;
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  min-height: 100%;
+  background: var(--background);
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--background);
+  background-image:
+    radial-gradient(ellipse at 82% 4%, rgba(160, 120, 85, 0.2), transparent 31rem),
+    radial-gradient(ellipse at 12% 45%, rgba(234, 220, 197, 0.74), transparent 34rem),
+    linear-gradient(145deg, #faf7f0 0%, #f2e8d7 56%, #f8f4eb 100%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: var(--chamoisee);
+  color: var(--ivory);
+}
+
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+  transition-timing-function: cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+
+.app-shell {
+  color: var(--ink);
+}
+
+.app-layout {
+  isolation: isolate;
+}
+
+.content-shell {
+  position: relative;
+  min-height: 100vh;
+}
+
+.app-content {
+  min-height: calc(100vh - 7rem);
+  animation: content-arrive 420ms ease-out both;
+}
+
+.app-content h1 {
+  font-family: "Times New Roman", Times, serif;
+}
+
+.app-footer {
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+.sidebar-shell {
+  background: rgba(250, 247, 240, 0.87);
+  border-color: var(--line);
+  box-shadow: 12px 0 36px rgba(73, 40, 25, 0.06);
+  backdrop-filter: blur(18px);
+  perspective: 1100px;
+}
+
+.sidebar-footer {
+  background: rgba(250, 247, 240, 0.94);
+  border-color: var(--line);
+}
+
+.nav-link {
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-shell .nav-link,
+.sidebar-shell nav a,
+.sidebar-shell nav button,
+.sidebar-footer a,
+.sidebar-footer button {
+  position: relative;
+  transform-style: preserve-3d;
+  border-radius: 14px !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  border-bottom: 1px solid rgba(105, 74, 49, 0.22) !important;
+  background: linear-gradient(160deg, rgba(255, 254, 252, 0.96) 0%, rgba(244, 234, 219, 0.86) 100%);
+  box-shadow:
+    0 3px 0 rgba(196, 174, 145, 0.85),
+    0 8px 16px -4px rgba(73, 40, 25, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.95);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1), background 0.25s ease !important;
+}
+
+.sidebar-shell .nav-link:hover,
+.sidebar-shell nav a:hover,
+.sidebar-shell nav button:hover,
+.sidebar-footer a:hover,
+.sidebar-footer button:hover {
+  transform: translateY(-2.5px) translateZ(10px) rotateX(4deg);
+  background: linear-gradient(160deg, #ffffff 0%, #f6ecdd 100%);
+  box-shadow:
+    0 5px 0 rgba(182, 157, 126, 0.95),
+    0 14px 24px -6px rgba(73, 40, 25, 0.16),
+    inset 0 1px 1px #ffffff;
+}
+
+.sidebar-shell .nav-link:active,
+.sidebar-shell nav a:active,
+.sidebar-shell nav button:active,
+.sidebar-footer a:active,
+.sidebar-footer button:active {
+  transform: translateY(2px) translateZ(0px);
+  box-shadow:
+    0 1px 0 rgba(196, 174, 145, 0.85),
+    0 3px 6px rgba(73, 40, 25, 0.1);
+}
+
+.sidebar-shell .nav-active,
+.nav-active {
+  color: var(--ivory) !important;
+  border: 1px solid rgba(160, 120, 85, 0.45) !important;
+  border-bottom: 1px solid #2b150c !important;
+  background: linear-gradient(145deg, #865c40 0%, #5b3522 55%, #432315 100%) !important;
+  box-shadow:
+    0 4px 0 #2b150c,
+    0 12px 22px -4px rgba(73, 40, 25, 0.28),
+    inset 0 1px 1px rgba(255, 255, 255, 0.32) !important;
+}
+
+.sidebar-shell .nav-active:hover {
+  transform: translateY(-2.5px) translateZ(12px) rotateX(4deg);
+  box-shadow:
+    0 6px 0 #2b150c,
+    0 16px 26px -4px rgba(73, 40, 25, 0.34),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
+}
+
+.nav-active svg {
+  color: var(--beige) !important;
+}
+
+.profile-card {
+  background: linear-gradient(155deg, #ffffff 0%, #f3e8d7 100%);
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  border-bottom: 1px solid rgba(105, 74, 49, 0.24) !important;
+  box-shadow:
+    0 4px 0 rgba(196, 174, 145, 0.85),
+    0 12px 24px -6px rgba(73, 40, 25, 0.14),
+    inset 0 1px 1px #ffffff;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.profile-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 0 rgba(182, 157, 126, 0.95),
+    0 16px 28px -6px rgba(73, 40, 25, 0.18),
+    inset 0 1px 1px #ffffff;
+}
+
+@keyframes content-arrive {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+}
+
+.app-shell [class~="bg-white"] {
+  background-color: var(--surface-raised);
+}
+
+.app-shell [class~="bg-white"]:not(input):not(button) {
+  background-image: linear-gradient(150deg, rgba(255, 255, 255, 0.72), rgba(242, 232, 216, 0.38));
+  box-shadow: 0 10px 24px rgba(73, 40, 25, 0.07), inset 0 1px rgba(255, 255, 255, 0.9);
+}
+
+.app-shell [class~="bg-slate-50"] {
+  background-color: #f5eee2;
+}
+
+.app-shell [class~="bg-slate-100"] {
+  background-color: #efe4d2;
+}
+
+.app-shell [class~="bg-slate-200"] {
+  background-color: #e3d3bb;
+}
+
+.app-shell [class~="bg-blue-50"],
+.app-shell [class~="bg-neutral-50"] {
+  background-color: #f7f0e4;
+}
+
+.app-shell [class~="bg-blue-300"] {
+  background-color: #c4a782;
+}
+
+.app-shell [class~="bg-neutral-100"] {
+  background-color: #efe4d2;
+}
+
+.app-shell [class~="border-slate-100"],
+.app-shell [class~="border-slate-200"],
+.app-shell [class~="border-neutral-200"],
+.app-shell [class~="border-neutral-300"],
+.app-shell [class~="border-blue-400"],
+.app-shell [class~="border-blue-500"],
+.app-shell [class~="border-blue-600"] {
+  border-color: var(--line);
+}
+
+.app-shell [class*="border-slate-200/"] {
+  border-color: var(--line);
+}
+
+.app-shell [class~="text-slate-900"],
+.app-shell [class~="text-slate-800"],
+.app-shell [class~="text-slate-700"],
+.app-shell [class~="text-neutral-900"],
+.app-shell [class~="text-black"] {
+  color: var(--ink);
+}
+
+.app-shell [class~="text-slate-600"],
+.app-shell [class~="text-slate-500"],
+.app-shell [class~="text-slate-400"],
+.app-shell [class~="text-neutral-600"],
+.app-shell [class~="text-neutral-500"],
+.app-shell [class~="text-neutral-400"],
+.app-shell [class~="text-neutral-700"] {
+  color: var(--muted);
+}
+
+.app-shell [class~="bg-blue-600"],
+.app-shell [class~="bg-blue-700"],
+.app-shell [class~="bg-blue-500"],
+.app-shell [class~="bg-black"] {
+  color: var(--ivory);
+  background-image: linear-gradient(135deg, var(--brown), var(--seal-brown));
+}
+
+.app-shell [class~="hover:bg-blue-700"]:hover,
+.app-shell [class~="hover:bg-black"]:hover,
+.app-shell [class~="hover:bg-neutral-800"]:hover {
+  background-image: linear-gradient(135deg, var(--seal-brown), #321b13);
+}
+
+.app-shell [class~="hover:bg-slate-100"]:hover,
+.app-shell [class~="hover:bg-slate-200"]:hover,
+.app-shell [class~="hover:bg-neutral-100"]:hover {
+  background-color: var(--beige);
+}
+
+.app-shell [class~="bg-blue-100/80"],
+.app-shell [class~="bg-blue-100"] {
+  color: var(--seal-brown);
+  background-color: var(--beige);
+}
+
+.app-shell [class~="text-blue-700"],
+.app-shell [class~="text-blue-600"],
+.app-shell [class~="text-blue-500"],
+.app-shell [class~="hover:text-blue-600"]:hover {
+  color: var(--brown);
+}
+
+.app-shell [class*="ring-blue-"] {
+  --tw-ring-color: rgba(160, 120, 85, 0.35);
+}
+
+.app-shell [class~="bg-emerald-600"],
+.app-shell [class~="bg-emerald-700"] {
+  color: var(--ivory);
+  background-image: linear-gradient(135deg, var(--chamoisee), var(--brown));
+}
+
+.app-shell [class~="bg-emerald-100"],
+.app-shell [class~="bg-amber-100"] {
+  background-color: var(--beige);
+}
+
+.app-shell [class~="text-emerald-700"],
+.app-shell [class~="text-amber-700"],
+.app-shell [class~="text-amber-600"] {
+  color: var(--seal-brown);
+}
+
+.app-shell [class~="text-blue-200"] {
+  color: var(--beige);
+}
+
+.app-shell input:not([type="checkbox"]):not([type="radio"]),
+.app-shell textarea,
+.app-shell select {
+  color: var(--ink);
+  background-color: #fffdf8;
+}
+
+.app-shell input::placeholder,
+.app-shell textarea::placeholder {
+  color: #a38e77;
+}
+
+.app-shell input:focus,
+.app-shell textarea:focus,
+.app-shell select:focus {
+  border-color: var(--chamoisee);
+  --tw-ring-color: rgba(160, 120, 85, 0.35);
+}
+
+body:has(.plain-page),
+html:has(.plain-page) {
+  background: #ffffff !important;
+  background-image: none !important;
+  color: #000000 !important;
+}
+
+.app-shell .plain-page,
+.plain-page {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: #000000 !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  min-height: 100vh;
+}
+
+.plain-page h1,
+.plain-page h2,
+.plain-page h3 {
+  font-family: Arial, Helvetica, sans-serif !important;
+  color: #000000 !important;
+}
+
+.plain-page [class~="bg-white"] {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+.plain-page [class~="bg-black"] {
+  background-color: #000000 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+}
+
+.plain-page [class~="hover:bg-neutral-800"]:hover,
+.plain-page [class~="hover:bg-black"]:hover {
+  background-color: #262626 !important;
+  background-image: none !important;
+}
+
+.plain-page [class~="text-black"],
+.plain-page [class~="text-neutral-900"],
+.plain-page [class~="text-slate-900"] {
+  color: #000000 !important;
+}
+
+.plain-page [class~="text-neutral-700"],
+.plain-page [class~="text-neutral-600"],
+.plain-page [class~="text-neutral-500"],
+.plain-page [class~="text-slate-600"],
+.plain-page [class~="text-slate-500"] {
+  color: #525252 !important;
+}
+
+.plain-page [class~="border-neutral-200"],
+.plain-page [class~="border-neutral-300"],
+.plain-page [class~="border-slate-200"] {
+  border-color: #e5e5e5 !important;
+}
+
+.plain-page input:not([type="checkbox"]):not([type="radio"]),
+.plain-page textarea,
+.plain-page select {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-color: #d4d4d4 !important;
+}
+
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) {
+  --ink: #000000;
+  --muted: #333333;
+  color: #000000 !important;
+}
+
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) h1,
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) h2,
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) h3,
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) h4,
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) p,
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) span,
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) a,
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) label,
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) td,
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) th,
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) li,
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) input,
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) select,
+.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) textarea {
+  color: #000000;
+}
+
+.app-shell .nav-active,
+.app-shell .nav-active *,
+.app-shell [class~="bg-blue-600"],
+.app-shell [class~="bg-blue-600"] *,
+.app-shell [class~="bg-blue-700"],
+.app-shell [class~="bg-blue-700"] *,
+.app-shell [class~="bg-black"],
+.app-shell [class~="bg-black"] *,
+.app-shell [class~="bg-emerald-600"],
+.app-shell [class~="bg-emerald-600"] *,
+.app-shell [class~="text-white"] {
+  color: #ffffff !important;
+}
+
+.sidebar-footer button:hover,
+.sidebar-footer button:active,
+.sidebar-footer button:focus-visible {
+  background: linear-gradient(145deg, #ef4444 0%, #b91c1c 100%) !important;
+  border-color: #991b1b !important;
+  box-shadow:
+    0 3px 0 #7f1d1d,
+    0 10px 18px -4px rgba(185, 28, 28, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
+}
+
+.sidebar-footer button:hover svg,
+.sidebar-footer button:active svg,
+.sidebar-footer button:focus-visible svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+.sidebar-footer a[href="/admin"].nav-active,
+.sidebar-footer a[href="/admin"]:active,
+.sidebar-shell a[href="/admin"].nav-active,
+.sidebar-shell a[href="/admin"]:active {
+  background: linear-gradient(145deg, #22c55e 0%, #15803d 100%) !important;
+  border-color: #166534 !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 4px 0 #14532d,
+    0 12px 22px -4px rgba(21, 128, 61, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.32) !important;
+}
+
+.sidebar-footer a[href="/admin"].nav-active svg,
+.sidebar-footer a[href="/admin"]:active svg,
+.sidebar-shell a[href="/admin"].nav-active svg,
+.sidebar-shell a[href="/admin"]:active svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}

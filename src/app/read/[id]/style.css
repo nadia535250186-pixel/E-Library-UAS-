@@ -1,0 +1,46 @@
+.reader-page:not(.fixed) {
+  border: 1px solid rgba(105, 74, 49, 0.16);
+  border-radius: 1.25rem;
+  background: rgba(255, 253, 248, 0.92);
+  box-shadow: 0 18px 34px rgba(73, 40, 25, 0.12);
+}
+
+.reader-page.fixed > div:first-child {
+  background: linear-gradient(135deg, #fffdf8, #f2e8d8);
+  box-shadow: 0 8px 24px rgba(73, 40, 25, 0.18);
+}
+
+.reader-page.fixed > div:first-child button,
+.reader-page.fixed > div:first-child a {
+  transition: color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.reader-page.fixed > div:first-child button:hover,
+.reader-page.fixed > div:first-child a:hover {
+  transform: translateY(-1px);
+}
+
+.reader-page.fixed > div:first-child :focus-visible {
+  outline: 2px solid var(--chamoisee);
+  outline-offset: 2px;
+}
+
+.reader-page.fixed h1 {
+  color: var(--seal-brown);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@media (max-width: 640px) {
+  .reader-page.fixed > div:first-child {
+    padding-inline: 0.65rem;
+  }
+
+  .reader-page.fixed > div:first-child h1 {
+    min-width: 0;
+    max-width: 38vw;
+  }
+
+  .reader-page.fixed > div:first-child > div:last-child > span {
+    display: none;
+  }
+}
