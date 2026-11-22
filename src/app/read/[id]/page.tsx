@@ -63,7 +63,7 @@ export default function ReadPdfPage() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const pdfDocRef = useRef<PdfDocumentProxy | null>(null);
   const renderTaskRef = useRef<{ cancel?: () => void } | null>(null);
-  const isSpeakingRef = useRef(false);
+  const sessionRef = useRef(0);
 
   const [audioMode, setAudioMode] = useState(false);
   const [numPages, setNumPages] = useState(0);
@@ -104,7 +104,7 @@ export default function ReadPdfPage() {
   }, [pdfSource]);
 
   const stopAudio = useCallback(() => {
-    isSpeakingRef.current = false;
+    sessionRef.current += 1;
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
@@ -176,6 +176,8 @@ export default function ReadPdfPage() {
   useEffect(() => {
     if (!audioMode || !pdfDocRef.current || !canvasRef.current || numPages === 0) return;
 
+    let cancelled = false;
+
     const renderPage = async () => {
       const doc = pdfDocRef.current!;
       const canvas = canvasRef.current!;
@@ -186,6 +188,8 @@ export default function ReadPdfPage() {
         }
 
         const page = await doc.getPage(pageNumber);
+        if (cancelled) return;
+
         const viewport = page.getViewport({ scale: 1.35 });
         const baseViewport = page.getViewport({ scale: 1 });
         const context = canvas.getContext('2d');
@@ -197,8 +201,11 @@ export default function ReadPdfPage() {
         const task = page.render({ canvasContext: context, viewport });
         renderTaskRef.current = task;
         await task.promise;
+        if (cancelled) return;
 
         const textContent = await page.getTextContent();
+        if (cancelled) return;
+
         const pageW = baseViewport.width;
         const pageH = baseViewport.height;
 
@@ -218,6 +225,15 @@ export default function ReadPdfPage() {
           const fontH = Math.hypot(tx[2], tx[3]) || item.height || 12;
           const x = tx[4];
           const yTop = pageH - tx[5] - fontH;
+
+          const isDuplicate = segments.some(
+            (s) =>
+              s.str === text &&
+              Math.abs(s.x - x) < 3 &&
+              Math.abs(s.yTop - yTop) < 3
+          );
+          if (isDuplicate) continue;
+
           segments.push({
             str: text,
             x,
@@ -238,13 +254,19 @@ export default function ReadPdfPage() {
         const flush = () => {
           if (bucket.length === 0) return;
           bucket.sort((a, b) => a.x - b.x);
-          const text = bucket.map((s) => s.str).join(' ').trim();
+          const text = bucket.map((s) => s.str).join(' ').replace(/\s+/g, ' ').trim();
           const minX = Math.min(...bucket.map((s) => s.x));
           const maxX = Math.max(...bucket.map((s) => s.x + s.width));
           const minY = Math.min(...bucket.map((s) => s.yTop));
           const maxH = Math.max(...bucket.map((s) => s.height));
 
-          if (text) {
+          const alreadyExists = grouped.some(
+            (g) =>
+              g.text === text &&
+              Math.abs(g.topRatio - minY / pageH) < 0.005
+          );
+
+          if (text && !alreadyExists) {
             grouped.push({
               id: grouped.length,
               text,
@@ -273,63 +295,79 @@ export default function ReadPdfPage() {
         }
         flush();
 
-        setLines(grouped);
+        if (!cancelled) {
+          setLines(grouped);
+        }
       } catch {
       }
     };
 
     renderPage();
+
+    return () => {
+      cancelled = true;
+    };
   }, [audioMode, pageNumber, numPages]);
 
-  const speakFromLine = useCallback((startIndex: number, pageLines: LineHighlight[]) => {
+  const speakSequentialOnce = useCallback((startIndex: number, pageLines: LineHighlight[]) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
       alert('Browser Anda tidak mendukung fitur pembaca audio.');
       return;
     }
 
-    if (pageLines.length === 0) return;
+    if (pageLines.length === 0 || startIndex >= pageLines.length) return;
+
+    sessionRef.current += 1;
+    const currentSession = sessionRef.current;
 
     window.speechSynthesis.cancel();
-    isSpeakingRef.current = true;
     setIsSpeaking(true);
 
     const sample = pageLines.map((l) => l.text).join(' ');
     const englishWords = (
-      sample.match(/\b(the|and|of|to|in|is|for|with|that|you|your|from)\b/gi) || []
+      sample.match(/\b(the|and|of|to|in|is|for|with|that|you|your|from|this|are)\b/gi) || []
     ).length;
     const lang = englishWords > 3 ? 'en-US' : 'id-ID';
 
-    const readNext = (idx: number) => {
-      if (!isSpeakingRef.current || idx >= pageLines.length) {
-        isSpeakingRef.current = false;
-        setIsSpeaking(false);
-        setActiveLineIndex(null);
+    const readLineAt = (idx: number) => {
+      if (sessionRef.current !== currentSession || idx >= pageLines.length) {
+        if (sessionRef.current === currentSession) {
+          setIsSpeaking(false);
+          setActiveLineIndex(null);
+        }
         return;
       }
 
-      const current = pageLines[idx];
+      const targetLine = pageLines[idx];
       setActiveLineIndex(idx);
 
-      const utterance = new SpeechSynthesisUtterance(current.text);
+      const utterance = new SpeechSynthesisUtterance(targetLine.text);
       utterance.lang = lang;
       utterance.rate = 1.0;
 
-      utterance.onend = () => {
-        if (isSpeakingRef.current) {
-          readNext(idx + 1);
-        }
+      let finished = false;
+      const advanceOnce = () => {
+        if (finished || sessionRef.current !== currentSession) return;
+        finished = true;
+        readLineAt(idx + 1);
       };
 
+      utterance.onend = advanceOnce;
       utterance.onerror = () => {
-        if (isSpeakingRef.current) {
-          readNext(idx + 1);
+        if (sessionRef.current === currentSession) {
+          setIsSpeaking(false);
+          setActiveLineIndex(null);
         }
       };
 
       window.speechSynthesis.speak(utterance);
     };
 
-    readNext(startIndex);
+    setTimeout(() => {
+      if (sessionRef.current === currentSession) {
+        readLineAt(startIndex);
+      }
+    }, 60);
   }, []);
 
   const handleToggleAudioMode = () => {
@@ -384,9 +422,9 @@ export default function ReadPdfPage() {
     >
       <div
         style={{
-          display: 'flex',
+          display: 'grid',
+          gridTemplateColumns: '1fr auto 1fr',
           alignItems: 'center',
-          justifyContent: 'space-between',
           backgroundColor: '#ffffff',
           padding: '10px 16px',
           borderBottom: '1px solid #e5e5e5',
@@ -394,22 +432,24 @@ export default function ReadPdfPage() {
           flexShrink: 0,
         }}
       >
-        <button
-          type="button"
-          onClick={() => {
-            stopAudio();
-            router.push('/books');
-          }}
-          className="inline-flex items-center gap-2 bg-black hover:bg-neutral-800 active:translate-y-0.5 text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow-sm transition-all cursor-pointer shrink-0"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Kembali ke Katalog</span>
-        </button>
+        <div className="flex items-center justify-start">
+          <button
+            type="button"
+            onClick={() => {
+              stopAudio();
+              router.push('/books');
+            }}
+            className="inline-flex items-center gap-2 bg-black hover:bg-neutral-800 active:translate-y-0.5 text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow-sm transition-all cursor-pointer shrink-0"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Kembali ke Katalog</span>
+          </button>
+        </div>
 
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center justify-center gap-3 min-w-0">
           <h1
             style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
-            className="text-xs sm:text-sm font-bold text-black truncate max-w-xl"
+            className="text-xs sm:text-sm font-bold text-black truncate max-w-md"
           >
             {book.title}
           </h1>
@@ -424,7 +464,7 @@ export default function ReadPdfPage() {
               >
                 <ChevronLeft className="w-3.5 h-3.5 text-black" />
               </button>
-              <span className="font-semibold text-black px-1">
+              <span className="font-semibold text-black px-1 min-w-[76px] text-center tabular-nums">
                 {pageNumber} / {numPages}
               </span>
               <button
@@ -439,11 +479,11 @@ export default function ReadPdfPage() {
           )}
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center justify-end gap-2 shrink-0">
           {audioMode && !isSpeaking && lines.length > 0 && (
             <button
               type="button"
-              onClick={() => speakFromLine(0, lines)}
+              onClick={() => speakSequentialOnce(0, lines)}
               style={{ backgroundColor: '#1d4ed8', color: '#ffffff' }}
               className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm cursor-pointer"
             >
@@ -503,10 +543,6 @@ export default function ReadPdfPage() {
         />
       ) : (
         <div className="flex-1 overflow-auto flex flex-col items-center p-4 sm:p-6 bg-neutral-200">
-          <div className="mb-3 px-3 py-1.5 rounded-full bg-white border border-neutral-300 text-xs font-medium text-neutral-800 shadow-xs">
-            Arahkan & klik baris kalimat mana saja di bawah ini untuk langsung dibacakan dan lanjut otomatis
-          </div>
-
           {isLoadingPage ? (
             <div className="flex items-center gap-2 text-neutral-700 text-sm my-auto">
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -522,7 +558,7 @@ export default function ReadPdfPage() {
                   return (
                     <div
                       key={line.id}
-                      onClick={() => speakFromLine(index, lines)}
+                      onClick={() => speakSequentialOnce(index, lines)}
                       style={{
                         position: 'absolute',
                         left: `${line.leftRatio * 100}%`,
