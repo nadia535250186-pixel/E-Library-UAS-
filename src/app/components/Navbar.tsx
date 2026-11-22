@@ -11,6 +11,7 @@ import {
   History,
   CreditCard,
   Info,
+  AlertCircle,
   Shield,
   LogOut,
   PanelLeftClose,
@@ -77,9 +78,18 @@ export default function Navbar() {
           }`}
         >
           {!isCollapsed && (
-            <Link href="/" className="text-base font-bold text-slate-800">
-              Lafenadher
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link href="/" className="text-base font-bold text-slate-800">
+                LAFENADHER
+              </Link>
+              <Link
+                href="/kebijakan"
+                title="Syarat & Ketentuan Perpustakaan"
+                className="p-1 text-slate-600 hover:text-amber-800 hover:bg-white rounded-full transition-colors"
+              >
+                <AlertCircle className="w-4 h-4" />
+              </Link>
+            </div>
           )}
           <button
             type="button"
