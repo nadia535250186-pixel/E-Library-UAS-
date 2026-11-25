@@ -114,7 +114,9 @@ export default function Navbar() {
             const isActive =
               item.href === '/'
                 ? pathname === '/'
-                : pathname.startsWith(item.href);
+                : item.href === '/books'
+                  ? pathname.startsWith('/books') || pathname.startsWith('/read')
+                  : pathname.startsWith(item.href);
 
             return (
               <Link

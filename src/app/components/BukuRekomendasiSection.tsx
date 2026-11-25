@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
+import React from 'react';
 import { Book } from '../models/library';
 
-interface BookShelfSectionProps {
+interface BukuRekomendasiSectionProps {
   title: string;
   subtitle: string;
   books: Book[];
@@ -13,41 +13,30 @@ export default function BukuRekomendasiSection({
   title,
   subtitle,
   books,
-}: BookShelfSectionProps) {
+}: BukuRekomendasiSectionProps) {
   return (
     <section className="space-y-4">
       <div>
-        <h2 className="section-heading text-base sm:text-lg font-bold text-slate-900">
+        <h2 className="section-heading text-lg sm:text-xl font-bold text-slate-900">
           {title}
         </h2>
-        <p className="text-xs text-slate-500">{subtitle}</p>
+        <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>
       </div>
 
-      {books.length === 0 ? (
-        <div className="border border-neutral-200 rounded-2xl p-8 text-center text-xs text-neutral-500">
-          Belum ada buku yang tersedia pada kategori ini.
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {books.map((book) => (
-            <Link
-              key={book.id}
-              href={`/books/${book.id}`}
-              title={book.title}
-              className="rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm flex items-center justify-center aspect-[3/4] p-2"
-            >
-              <img
-                src={book.cover}
-                alt={book.title}
-                onError={(e) => {
-                  e.currentTarget.src = '/images/default-book-cover.svg';
-                }}
-                className="w-full h-full object-contain rounded-lg"
-              />
-            </Link>
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        {books.map((book) => (
+          <div
+            key={book.id}
+            className="bg-white rounded-2xl p-3 border border-[#e6dccb] shadow-sm select-none cursor-default"
+          >
+            <img
+              src={book.cover}
+              alt={book.title}
+              className="w-full aspect-[3/4] object-cover rounded-xl block"
+            />
+          </div>
+        ))}
+      </div>
     </section>
   );
 }

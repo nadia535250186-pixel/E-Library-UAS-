@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { useLibrary } from './components/LibraryProvider';
@@ -77,13 +77,6 @@ export default function HomePage() {
     setCurrentSlide((prev) => (prev + 1) % BANNER_SLIDES.length);
   };
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % BANNER_SLIDES.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
-
   const popularBooks = books.filter((b) => b.isPopular).slice(0, 5);
   const displayPopular =
     popularBooks.length > 0 ? popularBooks : books.slice(5, 10);
@@ -96,7 +89,6 @@ export default function HomePage() {
 
   return (
     <main className="home-page w-full px-6 pt-3 pb-12 space-y-10">
-      {/* Bagian Atas: Header & Banner */}
       <div className="space-y-4">
         <div className="home-topline">
           <div>
@@ -111,12 +103,11 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Hero Banner Carousel */}
         <section className="home-banner relative group w-full h-64 sm:h-80 md:h-96 rounded-2xl overflow-hidden bg-neutral-100">
           <img
             src={BANNER_SLIDES[currentSlide].src}
             alt={BANNER_SLIDES[currentSlide].alt}
-            className="w-full h-full object-cover transition-all duration-500"
+            className="w-full h-full object-cover"
           />
 
           <button
@@ -155,28 +146,24 @@ export default function HomePage() {
         </section>
       </div>
 
-      {/* Urutan 1: Buku Rekomendasi */}
       <BukuRekomendasiSection
         title="Buku Rekomendasi"
         subtitle="Koleksi buku pilihan yang direkomendasikan untuk Anda"
         books={recommendedBooks}
       />
 
-      {/* Urutan 2: Buku Populer */}
       <BukuRekomendasiSection
         title="Buku Populer"
         subtitle="Koleksi buku yang paling banyak dibaca dan diminati anggota"
         books={displayPopular}
       />
 
-      {/* Urutan 3: Buku Terbaru */}
       <BukuRekomendasiSection
         title="Buku Terbaru"
         subtitle="Koleksi bacaan terbaru yang baru ditambahkan ke perpustakaan"
         books={latestBooks}
       />
 
-      {/* Urutan 4: Author (Foto Profil, Nama, dan NIM) */}
       <section className="pt-8 border-t border-[#e6dccb] space-y-5">
         <div className="flex flex-col items-center text-center space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#4a2e1b]/10 text-[#4a2e1b] text-[11px] font-semibold">
@@ -198,14 +185,12 @@ export default function HomePage() {
                   : 'bg-white text-slate-900 border-[#e6dccb] hover:border-[#4a2e1b]/50'
               }`}
             >
-              {/* Dekorasi Cahaya Halus di Latar Belakang */}
               <div
                 className={`pointer-events-none absolute -top-10 -right-10 w-28 h-28 rounded-full blur-2xl opacity-30 transition-opacity duration-300 group-hover:opacity-50 ${
                   index === 0 ? 'bg-amber-300' : 'bg-[#c8a987]'
                 }`}
               />
 
-              {/* Foto Profil dengan Bingkai Ganda */}
               <div
                 className={`relative w-24 h-24 rounded-full p-1 mb-4 shadow-md transition-transform duration-300 group-hover:scale-105 ${
                   index === 0
@@ -220,7 +205,6 @@ export default function HomePage() {
                 />
               </div>
 
-              {/* Nama Lengkap */}
               <h3
                 className={`text-sm font-bold leading-snug line-clamp-2 min-h-[2.5rem] flex items-center justify-center ${
                   index === 0 ? 'text-white' : 'text-slate-900'
@@ -229,7 +213,6 @@ export default function HomePage() {
                 {author.name}
               </h3>
 
-              {/* Pill Badge NIM */}
               <span
                 className={`mt-2.5 inline-flex items-center px-3.5 py-1 rounded-full text-xs font-mono font-semibold tracking-wider ${
                   index === 0

@@ -23,7 +23,7 @@ export default function KebijakanPage() {
             marginBottom: '20px',
             fontSize: '14px',
             fontWeight: 'bold',
-            color: '#ffffff',
+            color: '#1d1c1c',
             textDecoration: 'underline',
           }}
         >

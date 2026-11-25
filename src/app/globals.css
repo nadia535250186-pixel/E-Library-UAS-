@@ -26,6 +26,7 @@
 html {
   min-height: 100%;
   background: var(--background);
+  transition: none !important;
 }
 
 body {
@@ -38,6 +39,7 @@ body {
   background-attachment: fixed;
   color: var(--ink);
   font-family: Arial, Helvetica, sans-serif;
+  transition: none !important;
 }
 
 ::selection {
@@ -58,6 +60,8 @@ a {
 
 .app-shell {
   color: var(--ink);
+  background: transparent;
+  transition: none !important;
 }
 
 .app-layout {
@@ -67,11 +71,13 @@ a {
 .content-shell {
   position: relative;
   min-height: 100vh;
+  transition: none !important;
 }
 
 .app-content {
   min-height: calc(100vh - 7rem);
-  animation: content-arrive 420ms ease-out both;
+  animation: none !important;
+  transition: none !important;
 }
 
 .app-content h1 {
@@ -116,7 +122,7 @@ a {
     0 3px 0 rgba(196, 174, 145, 0.85),
     0 8px 16px -4px rgba(73, 40, 25, 0.1),
     inset 0 1px 1px rgba(255, 255, 255, 0.95);
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1), background 0.25s ease !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .sidebar-shell .nav-link:hover,
@@ -153,6 +159,7 @@ a {
     0 4px 0 #2b150c,
     0 12px 22px -4px rgba(73, 40, 25, 0.28),
     inset 0 1px 1px rgba(255, 255, 255, 0.32) !important;
+  transition: none !important;
 }
 
 .sidebar-shell .nav-active:hover {
@@ -176,7 +183,7 @@ a {
     0 4px 0 rgba(196, 174, 145, 0.85),
     0 12px 24px -6px rgba(73, 40, 25, 0.14),
     inset 0 1px 1px #ffffff;
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .profile-card:hover {
@@ -185,11 +192,6 @@ a {
     0 6px 0 rgba(182, 157, 126, 0.95),
     0 16px 28px -6px rgba(73, 40, 25, 0.18),
     inset 0 1px 1px #ffffff;
-}
-
-@keyframes content-arrive {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -352,20 +354,17 @@ a {
   --tw-ring-color: rgba(160, 120, 85, 0.35);
 }
 
-body:has(.plain-page),
-html:has(.plain-page) {
-  background: #ffffff !important;
-  background-image: none !important;
-  color: #000000 !important;
-}
-
 .app-shell .plain-page,
 .plain-page {
+  position: relative;
+  z-index: 10;
   background-color: #ffffff !important;
   background-image: none !important;
   color: #000000 !important;
   font-family: Arial, Helvetica, sans-serif !important;
   min-height: 100vh;
+  width: 100%;
+  transition: none !important;
 }
 
 .plain-page h1,
@@ -395,7 +394,8 @@ html:has(.plain-page) {
 
 .plain-page [class~="text-black"],
 .plain-page [class~="text-neutral-900"],
-.plain-page [class~="text-slate-900"] {
+.plain-page [class~="text-slate-900"],
+.plain-page [class~="text-slate-800"] {
   color: #000000 !important;
 }
 
@@ -419,29 +419,6 @@ html:has(.plain-page) {
   background-color: #ffffff !important;
   color: #000000 !important;
   border-color: #d4d4d4 !important;
-}
-
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) {
-  --ink: #000000;
-  --muted: #333333;
-  color: #000000 !important;
-}
-
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) h1,
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) h2,
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) h3,
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) h4,
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) p,
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) span,
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) a,
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) label,
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) td,
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) th,
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) li,
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) input,
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) select,
-.app-shell:not(:has(.nav-link[href="/"].nav-active)):not(:has(.nav-link[href="/kartu-anggota"].nav-active)) textarea {
-  color: #000000;
 }
 
 .app-shell .nav-active,
