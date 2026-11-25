@@ -96,7 +96,7 @@ export default function LoginPage() {
             />
           </div>
 
-          <div style={{ marginBottom: '20px' }}>
+          <div style={{ marginBottom: '8px' }}>
             <label
               style={{
                 display: 'block',
@@ -122,6 +122,19 @@ export default function LoginPage() {
                 fontFamily: 'Arial, sans-serif',
               }}
             />
+          </div>
+
+          <div style={{ textAlign: 'right', marginBottom: '20px' }}>
+            <Link
+              href="/forgot-password"
+              style={{
+                fontSize: '13px',
+                color: '#000000',
+                textDecoration: 'underline',
+              }}
+            >
+              Forgot Password?
+            </Link>
           </div>
 
           <button

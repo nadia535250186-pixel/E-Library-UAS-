@@ -12,7 +12,7 @@ interface BookCardProps {
 }
 
 export default function BookCard({ book, compact = false }: BookCardProps) {
-  const { favorites, toggleFavorite, borrowBook, returnBook, isBorrowed } = useLibrary();
+  const { favorites, toggleFavorite, returnBook, isBorrowed } = useLibrary();
 
   const liked = favorites.includes(book.id);
   const borrowed = isBorrowed(book.id);
@@ -26,14 +26,15 @@ export default function BookCard({ book, compact = false }: BookCardProps) {
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
 
-        <span className="absolute top-2.5 left-2.5 bg-slate-900/75 backdrop-blur-sm text-white text-[10px] font-medium px-2.5 py-1 rounded-md max-w-[70%] truncate">
+        <span className="absolute top-2.5 left-2.5 bg-slate-900/75 backdrop-blur-sm text-white text-[10px] font-medium px-2.5 py-1 rounded-md max-w-[70%] truncate pointer-events-none">
           {book.category}
         </span>
 
         <button
+          type="button"
           onClick={() => toggleFavorite(book.id)}
           aria-label="Favorit"
-          className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/90 shadow flex items-center justify-center hover:scale-110 transition-transform"
+          className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/90 shadow flex items-center justify-center hover:scale-110 transition-transform cursor-pointer z-10"
         >
           <Heart
             className={`w-4 h-4 ${
@@ -43,8 +44,11 @@ export default function BookCard({ book, compact = false }: BookCardProps) {
         </button>
       </div>
 
-      <div className="p-3 flex flex-col gap-2">
-        <h3 className="font-semibold text-slate-800 text-xs sm:text-sm line-clamp-1" title={book.title}>
+      <div className="p-3 flex-1 flex flex-col justify-between gap-2">
+        <h3
+          className="font-semibold text-slate-800 text-xs sm:text-sm line-clamp-1"
+          title={book.title}
+        >
           {book.title}
         </h3>
 
@@ -53,25 +57,26 @@ export default function BookCard({ book, compact = false }: BookCardProps) {
             {borrowed ? (
               <>
                 <Link
-                  href={`/read/${book.id}`}
+                  href={`/books/${book.id}`}
                   className="w-full text-center bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium py-1.5 rounded-lg transition-colors"
                 >
                   Baca PDF
                 </Link>
                 <button
+                  type="button"
                   onClick={() => returnBook(book.id)}
-                  className="w-full text-center bg-slate-100 hover:bg-slate-200 text-slate-600 text-[11px] font-medium py-1.5 rounded-lg transition-colors"
+                  className="w-full text-center bg-slate-100 hover:bg-slate-200 text-slate-600 text-[11px] font-medium py-1.5 rounded-lg transition-colors cursor-pointer"
                 >
                   Kembalikan Buku
                 </button>
               </>
             ) : (
-              <button
-                onClick={() => borrowBook(book)}
+              <Link
+                href={`/books/${book.id}`}
                 className="w-full text-center bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-2 rounded-lg transition-colors"
               >
                 Pinjam Buku
-              </button>
+              </Link>
             )}
           </div>
         )}

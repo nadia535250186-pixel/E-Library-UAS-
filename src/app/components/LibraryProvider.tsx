@@ -29,6 +29,11 @@ interface LibraryContextType {
     emailOrNim: string,
     password: string
   ) => { ok: boolean; message?: string };
+  resetPassword: (
+    nim: string,
+    email: string,
+    newPassword: string
+  ) => { ok: boolean; message?: string };
   logoutMember: () => void;
   favorites: string[];
   borrowHistory: BorrowRecord[];
@@ -46,7 +51,7 @@ const LibraryContext = createContext<LibraryContextType | undefined>(
 );
 
 const BOOKS_STORAGE_KEY = 'lafenandher_books_v2';
-const MEMBERS_STORAGE_KEY = 'lafenandher_members_v2';
+const MEMBERS_STORAGE_KEY = 'lafenandher_members_v3';
 
 export function LibraryProvider({
   children,
@@ -102,7 +107,12 @@ export function LibraryProvider({
         }
 
         if (savedMembers) {
-          setMembers(JSON.parse(savedMembers));
+          const parsed: Member[] = JSON.parse(savedMembers);
+          const merged = parsed.map((m) => {
+            const def = DEFAULT_MEMBERS.find((d) => d.nim === m.nim);
+            return def ? { ...def, ...m, email: m.email || def.email } : m;
+          });
+          setMembers(merged);
         }
 
         if (savedFavs) {
@@ -229,6 +239,7 @@ export function LibraryProvider({
 
   const loginWithEmail = (emailOrNim: string, password: string) => {
     const query = emailOrNim.trim().toLowerCase();
+
     const found = members.find(
       (m) =>
         m.nim.toLowerCase() === query ||
@@ -251,6 +262,50 @@ export function LibraryProvider({
 
     setCurrentMemberId(found.id);
     return { ok: true };
+  };
+
+  const resetPassword = (
+    nim: string,
+    email: string,
+    newPassword: string
+  ) => {
+    const cleanNim = nim.trim().toLowerCase();
+    const cleanEmail = email.trim().toLowerCase();
+
+    const found = members.find((member) => {
+      const def = DEFAULT_MEMBERS.find((d) => d.nim === member.nim);
+      const memberEmail = (member.email || def?.email || '').toLowerCase();
+      return (
+        member.nim.trim().toLowerCase() === cleanNim &&
+        memberEmail === cleanEmail
+      );
+    });
+
+    if (!found) {
+      return {
+        ok: false,
+        message: 'NIM atau Email tidak ditemukan atau tidak cocok.',
+      };
+    }
+
+    setMembers((prev) =>
+      prev.map((member) => {
+        if (member.id === found.id) {
+          const def = DEFAULT_MEMBERS.find((d) => d.nim === member.nim);
+          return {
+            ...member,
+            email: member.email || def?.email || cleanEmail,
+            password: newPassword,
+          };
+        }
+        return member;
+      })
+    );
+
+    return {
+      ok: true,
+      message: 'Password berhasil diubah. Silakan Login.',
+    };
   };
 
   const logoutMember = () => {
@@ -370,6 +425,7 @@ export function LibraryProvider({
         switchMember,
         registerMember,
         loginWithEmail,
+        resetPassword,
         logoutMember,
         favorites,
         borrowHistory,

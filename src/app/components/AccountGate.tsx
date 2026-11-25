@@ -13,7 +13,10 @@ export default function AccountGate({
   const router = useRouter();
   const { currentMember, isLoaded, isSwitchingAccount } = useLibrary();
 
-  const isAuthRoute = pathname === '/login' || pathname === '/register';
+  const isAuthRoute =
+    pathname === '/login' ||
+    pathname === '/register' ||
+    pathname === '/forgot-password';
 
   useEffect(() => {
     if (!isLoaded) return;
