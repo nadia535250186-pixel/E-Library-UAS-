@@ -1,14 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLibrary } from './LibraryProvider';
 
-export default function AccountGate({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function AuthRedirector() {
   const pathname = usePathname();
   const router = useRouter();
   const { currentMember, isLoaded, isSwitchingAccount } = useLibrary();
@@ -26,17 +22,26 @@ export default function AccountGate({
     }
   }, [isLoaded, isSwitchingAccount, currentMember, isAuthRoute, router]);
 
+  return null;
+}
+
+export default function AccountGate({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { isLoaded, isSwitchingAccount } = useLibrary();
+
   if (!isLoaded || isSwitchingAccount) {
     return null;
   }
 
-  if (isAuthRoute) {
-    return <>{children}</>;
-  }
-
-  if (!currentMember) {
-    return null;
-  }
-
-  return <>{children}</>;
+  return (
+    <>
+      <Suspense fallback={null}>
+        <AuthRedirector />
+      </Suspense>
+      {children}
+    </>
+  );
 }
