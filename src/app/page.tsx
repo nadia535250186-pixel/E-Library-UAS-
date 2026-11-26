@@ -79,11 +79,13 @@ export default function HomePage() {
 
   const popularBooks = books.filter((b) => b.isPopular).slice(0, 5);
   const displayPopular =
-    popularBooks.length > 0 ? popularBooks : books.slice(5, 10);
+    popularBooks.length > 0 ? popularBooks : books.slice(0, 5);
 
-  const recommendedBooks = books
-    .filter((b) => !displayPopular.some((p) => p.id === b.id))
-    .slice(0, 5);
+  const nonPopularBooks = books.filter((b) => !b.isPopular);
+  const recommendedBooks =
+    nonPopularBooks.length >= 5
+      ? nonPopularBooks.slice(0, 5)
+      : books.slice(5, 10);
 
   const latestBooks = [...books].reverse().slice(0, 5);
 

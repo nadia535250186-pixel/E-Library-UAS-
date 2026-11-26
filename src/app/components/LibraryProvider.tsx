@@ -50,8 +50,23 @@ const LibraryContext = createContext<LibraryContextType | undefined>(
   undefined
 );
 
-const BOOKS_STORAGE_KEY = 'lafenandher_books_v2';
-const MEMBERS_STORAGE_KEY = 'lafenandher_members_v3';
+const API_KEY =
+  process.env.NEXT_PUBLIC_API_KEY || 'lafenandher-uas-secret-2026';
+
+async function syncToMongo(action: string, payload: unknown) {
+  try {
+    await fetch('/api/library', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+      },
+      body: JSON.stringify({ action, payload }),
+    });
+  } catch (err) {
+    console.error(`Gagal sinkronisasi (${action}) ke MongoDB:`, err);
+  }
+}
 
 export function LibraryProvider({
   children,
@@ -70,84 +85,80 @@ export function LibraryProvider({
     m3: ['med-1', 'med-2', 'med-3'],
   });
 
-  const [allHistory, setAllHistory] = useState<BorrowRecord[]>([
-    {
-      memberId: 'm3',
-      bookId: 'med-1',
-      bookTitle: 'Biokimia Harper',
-      bookCover: '/covers/Biokimia-Harper-Ed-27.webp',
-      borrowDate: '14 Nov 2026, 18:20',
-      returnDate: null,
-      status: 'Dipinjam',
-    },
-    {
-      memberId: 'm3',
-      bookId: 'med-2',
-      bookTitle: 'Company Profile Medis',
-      bookCover: '/covers/contemporary-dental-pharmacology.png',
-      borrowDate: '14 Nov 2026, 18:20',
-      returnDate: null,
-      status: 'Dipinjam',
-    },
-  ]);
+  const [allHistory, setAllHistory] = useState<BorrowRecord[]>([]);
 
   useEffect(() => {
-    queueMicrotask(() => {
+    let active = true;
+
+    async function loadInitialData() {
       try {
-        const savedMember = localStorage.getItem(
-          'lafenandher_active_member'
-        );
-        const savedMembers = localStorage.getItem(MEMBERS_STORAGE_KEY);
+        const savedMember = localStorage.getItem('lafenandher_active_member');
         const savedFavs = localStorage.getItem('lafenandher_favs_v2');
-        const savedHistory = localStorage.getItem('lafenandher_history_v2');
-        const savedBooks = localStorage.getItem(BOOKS_STORAGE_KEY);
 
         if (savedMember !== null) {
           setCurrentMemberId(savedMember === '' ? null : savedMember);
         }
-
-        if (savedMembers) {
-          const parsed: Member[] = JSON.parse(savedMembers);
-          const merged = parsed.map((m) => {
-            const def = DEFAULT_MEMBERS.find((d) => d.nim === m.nim);
-            return def ? { ...def, ...m, email: m.email || def.email } : m;
-          });
-          setMembers(merged);
-        }
-
         if (savedFavs) {
           setFavoritesByMember(JSON.parse(savedFavs));
         }
 
-        if (savedHistory) {
-          setAllHistory(JSON.parse(savedHistory));
-        }
+        const res = await fetch('/api/library', {
+          headers: { 'x-api-key': API_KEY },
+        });
 
-        if (savedBooks) {
-          setBooks(JSON.parse(savedBooks));
-        } else {
-          localStorage.removeItem('lafenandher_books');
+        if (res.ok && active) {
+          const data = await res.json();
+          if (Array.isArray(data.books) && data.books.length > 0) {
+            const normalizedBooks = data.books.map(
+              (b: Book & { _id?: string }) => ({
+                ...b,
+                id: b.id || String(b._id),
+              })
+            );
+            setBooks(normalizedBooks);
+          }
+          if (Array.isArray(data.members) && data.members.length > 0) {
+            const merged = data.members.map(
+              (m: Member & { _id?: string }) => {
+                const normalizedMember = {
+                  ...m,
+                  id: m.id || String(m._id),
+                };
+                const def = DEFAULT_MEMBERS.find(
+                  (d) => d.nim === normalizedMember.nim
+                );
+                return def
+                  ? {
+                      ...def,
+                      ...normalizedMember,
+                      email: normalizedMember.email || def.email,
+                    }
+                  : normalizedMember;
+              }
+            );
+            setMembers(merged);
+          }
+          if (Array.isArray(data.history)) {
+            setAllHistory(data.history);
+          }
         }
       } catch (error) {
-        console.error('Gagal memuat data perpustakaan:', error);
+        console.error('Gagal memuat data dari MongoDB:', error);
       } finally {
-        setIsLoaded(true);
+        if (active) setIsLoaded(true);
       }
-    });
+    }
+
+    loadInitialData();
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
     if (!isLoaded) return;
-    localStorage.setItem(
-      'lafenandher_active_member',
-      currentMemberId ?? ''
-    );
+    localStorage.setItem('lafenandher_active_member', currentMemberId ?? '');
   }, [currentMemberId, isLoaded]);
-
-  useEffect(() => {
-    if (!isLoaded) return;
-    localStorage.setItem(MEMBERS_STORAGE_KEY, JSON.stringify(members));
-  }, [members, isLoaded]);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -156,19 +167,6 @@ export function LibraryProvider({
       JSON.stringify(favoritesByMember)
     );
   }, [favoritesByMember, isLoaded]);
-
-  useEffect(() => {
-    if (!isLoaded) return;
-    localStorage.setItem(
-      'lafenandher_history_v2',
-      JSON.stringify(allHistory)
-    );
-  }, [allHistory, isLoaded]);
-
-  useEffect(() => {
-    if (!isLoaded) return;
-    localStorage.setItem(BOOKS_STORAGE_KEY, JSON.stringify(books));
-  }, [books, isLoaded]);
 
   const currentMember =
     members.find((m) => m.id === currentMemberId) || null;
@@ -183,9 +181,7 @@ export function LibraryProvider({
 
   const switchMember = (memberId: string) => {
     if (memberId === currentMemberId) return;
-
     setIsSwitchingAccount(true);
-
     setTimeout(() => {
       setCurrentMemberId(memberId);
       setIsSwitchingAccount(false);
@@ -234,6 +230,8 @@ export function LibraryProvider({
 
     setMembers((prev) => [...prev, newMember]);
     setCurrentMemberId(newMember.id);
+    syncToMongo('REGISTER_MEMBER', newMember);
+
     return { ok: true };
   };
 
@@ -288,19 +286,22 @@ export function LibraryProvider({
       };
     }
 
+    const def = DEFAULT_MEMBERS.find((d) => d.nim === found.nim);
+    const updatedEmail = found.email || def?.email || cleanEmail;
+
     setMembers((prev) =>
-      prev.map((member) => {
-        if (member.id === found.id) {
-          const def = DEFAULT_MEMBERS.find((d) => d.nim === member.nim);
-          return {
-            ...member,
-            email: member.email || def?.email || cleanEmail,
-            password: newPassword,
-          };
-        }
-        return member;
-      })
+      prev.map((member) =>
+        member.id === found.id
+          ? { ...member, email: updatedEmail, password: newPassword }
+          : member
+      )
     );
+
+    syncToMongo('RESET_PASSWORD', {
+      id: found.id,
+      email: updatedEmail,
+      password: newPassword,
+    });
 
     return {
       ok: true,
@@ -310,7 +311,6 @@ export function LibraryProvider({
 
   const logoutMember = () => {
     setIsSwitchingAccount(true);
-
     setTimeout(() => {
       setCurrentMemberId(null);
       setIsSwitchingAccount(false);
@@ -322,7 +322,6 @@ export function LibraryProvider({
 
     setFavoritesByMember((prev) => {
       const currentFavs = prev[currentMember.id] || [];
-
       const updated = currentFavs.includes(bookId)
         ? currentFavs.filter((id) => id !== bookId)
         : [...currentFavs, bookId];
@@ -362,6 +361,7 @@ export function LibraryProvider({
     };
 
     setAllHistory((prev) => [newRecord, ...prev]);
+    syncToMongo('BORROW_BOOK', newRecord);
   };
 
   const returnBook = (bookId: string) => {
@@ -388,6 +388,12 @@ export function LibraryProvider({
           : rec
       )
     );
+
+    syncToMongo('RETURN_BOOK', {
+      memberId: currentMember.id,
+      bookId,
+      returnDate: now,
+    });
   };
 
   const clearHistory = () => {
@@ -399,6 +405,8 @@ export function LibraryProvider({
           !(rec.memberId === currentMember.id && rec.status === 'Dikembalikan')
       )
     );
+
+    syncToMongo('CLEAR_HISTORY', { memberId: currentMember.id });
   };
 
   const addBook = (newBook: Omit<Book, 'id'>) => {
@@ -408,10 +416,12 @@ export function LibraryProvider({
     };
 
     setBooks((prev) => [book, ...prev]);
+    syncToMongo('ADD_BOOK', book);
   };
 
   const deleteBook = (bookId: string) => {
     setBooks((prev) => prev.filter((b) => b.id !== bookId));
+    syncToMongo('DELETE_BOOK', { bookId });
   };
 
   return (
@@ -447,9 +457,7 @@ export const useLibrary = () => {
   const context = useContext(LibraryContext);
 
   if (!context) {
-    throw new Error(
-      'useLibrary must be used within LibraryProvider'
-    );
+    throw new Error('useLibrary must be used within LibraryProvider');
   }
 
   return context;
