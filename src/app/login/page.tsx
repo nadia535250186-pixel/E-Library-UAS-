@@ -173,7 +173,7 @@ export default function LoginPage() {
             marginTop: '24px',
             fontSize: '12px',
             textAlign: 'center',
-            color: '#555555',
+            color: '#000000',
           }}
         >
           © 2026 Lafenandher E-Library. Hak Cipta Dilindungi

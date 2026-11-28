@@ -252,7 +252,7 @@ export default function RegisterPage() {
             marginTop: '24px',
             fontSize: '12px',
             textAlign: 'center',
-            color: '#555555',
+            color: '#050000',
           }}
         >
           © 2026 Lafenandher E-Library. Hak Cipta Dilindungi

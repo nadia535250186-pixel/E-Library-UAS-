@@ -47,6 +47,11 @@ body {
   color: var(--ivory);
 }
 
+.plain-page ::selection {
+  background: #000000;
+  color: #ffffff;
+}
+
 button,
 a,
 input {
@@ -419,6 +424,19 @@ a {
   background-color: #ffffff !important;
   color: #000000 !important;
   border-color: #d4d4d4 !important;
+}
+
+.plain-page input::placeholder,
+.plain-page textarea::placeholder {
+  color: #737373 !important;
+}
+
+.plain-page input:focus,
+.plain-page textarea:focus,
+.plain-page select:focus {
+  border-color: #000000 !important;
+  outline-color: #000000 !important;
+  --tw-ring-color: rgba(0, 0, 0, 0.25) !important;
 }
 
 .app-shell .nav-active,
